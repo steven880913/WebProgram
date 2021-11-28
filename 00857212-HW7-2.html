@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>00857212-HW7-2</title>
+    <style type="text/CSS">
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            background-color: lightblue;
+            font-family: Perpetua;
+        }
+
+        table, td, th {
+            border: 1px solid black;
+            padding: 4px;
+        }
+
+        th {
+            text-align: center;
+            color: white;
+            background-color: darkblue;
+        }
+
+        tr.oddrow {
+            background-color: white;
+        }
+
+        td {
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript">
+        // TODO
+        var output = "<table><thead><tr><th>Title</th><th>Author</th><th>Year</th><th>URL</th></tr></thead></table>";
+        var display;
+        var addButton;
+        var removeButton;
+        var bookTitle;
+        var author;
+        var year;
+        var bookURL;
+
+        function start(){
+            addButton = document.getElementById("addButton");
+            removeButton = document.getElementById("removeAllButton");
+            display = document.getElementById("display");
+            bookTitle = document.getElementById("bookTitle");
+            author = document.getElementById("author");
+            year = document.getElementById("year");
+            bookURL = document.getElementById("bookURL");
+
+            display.innerHTML = output;
+            
+            addButton.addEventListener("click", add, false);
+            removeButton.addEventListener("click", remove, false);
+            writeHTML();
+        }
+
+        function add(){
+            var date = new Date();
+            var key = "ntou-" + date.getTime();
+            var tempOBJ = new Object();
+            tempOBJ.title = bookTitle.value;
+            tempOBJ.author = author.value;
+            tempOBJ.year = year.value;
+            tempOBJ.url = bookURL.value;
+            bookTitle.value = "";   //clear
+            author.value = "";      //clear
+            year.value = "";        //clear
+            bookURL.value = "";     //clear
+            var tempJSON = JSON.stringify(tempOBJ);
+            localStorage.setItem(key, tempJSON);
+            writeHTML();
+        }
+
+        function remove(){
+            for(var i = 0; i<localStorage.length; i++){
+                if(localStorage.key(i).startsWith("ntou-")){
+                    localStorage.removeItem(localStorage.key(i));
+                }
+            }
+            writeHTML();
+            window.alert("All items were removed!");
+        }
+
+        function writeHTML(){
+            var localContent = [];
+            var length = localStorage.length;
+            for(var i = 0; i<length; i++){
+                if(localStorage.key(i).startsWith("ntou-")){
+                    localContent[i] = localStorage.key(i);
+                }
+            }
+            localContent.sort();
+
+            output = "<table><thead><tr><th>Title</th><th>Author</th><th>Year</th><th>URL</th></tr></thead><tbody>";
+            for(var i in localContent){
+                var obj = JSON.parse(localStorage.getItem(localContent[i]));
+                output += "<tr><td>" + obj.title + "</td><td>" + obj.author + "</td><td>" + obj.year + "</td><td><a href=" + obj.url + ">" + obj.url + "</a></td></tr>";
+            }
+            output += "</tbody></table>";
+            display.innerHTML = output;
+        }
+
+        window.addEventListener("load", start, false);
+    </script>
+</head>
+
+<body>
+    <form action="#">
+        <p>
+            <label>Book Title:<input id="bookTitle" type="text"></label>
+            <label>Author(s):<input id="author" type="text"></label>
+            <label>Year:<input id="year" type="number"></label>
+            <label>Book URL:<input id="bookURL" type="url"></label>
+        </p>
+        <p>
+            <input type="button" value="Add New Item" id="addButton">
+            <input type="button" value="Remove All Items" id="removeAllButton">
+        </p>
+    </form>
+    <hr>
+    <div id="display">
+    </div>
+</body>
+
+</html>
